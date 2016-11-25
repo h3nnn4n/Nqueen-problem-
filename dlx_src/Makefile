@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-lm -Wall
+CFLAGS=-lm -Wall -Wno-unused-but-set-variable -g
 SOURCES=links.c main.c
 BIN=dlx
 

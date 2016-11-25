@@ -46,47 +46,64 @@ void dancing_links(_links *h, int k, _ans *ans, int n){
     _links *r;
     int s;
 
-    if ( h->R == h ) {                              // Line 1
+    /*if ( k >= n ) abort();*/
+
+    /*printf("%d %d\n", k, n);*/
+    if ( k >= n ) {
+        /*abort();*/
+        _ans* a;
+        for ( a = ans->next; a != ans && a != NULL; a = a->next ) {
+            printf("%d ", a->O->n);
+        }
+        printf("\n -> %d\n\n", k);
+
         solutions_found++;
         printf("Solved. Took %lu steps\n", branchs); // Line 1
         printf("Found %lu solutions\n", solutions_found);
-        int w;
-        _ans *s;
-        _links *p;
-        for ( s = ans->next ; s->next != NULL ; s = s->next ){
-            for (p = s->O, w = 0 ; (p != s->O || w == 0) && p->C->n > n ; p = p->R, w++ );
-            c = p;
-            for (w = 0 ; p != c || w == 0 ; p = p->R, w++ ){
-                printf("%2.d ", p->C->n > n ? p->C->n - n : p->C->n);
-            }
-            puts("");
-        }
-
-        if ( s->next == NULL ){
-            for (p = s->O, w = 0 ; (p != s->O || w == 0) && p->C->n > n ; p = p->R, w++ );
-            c = p;
-            for (w = 0 ; p != c || w == 0 ; p = p->R, w++ ){
-                printf("%2.d ", p->C->n > n ? p->C->n - n : p->C->n);
-            }
-            puts("");
-        }
-
         puts("--------------------");
+    }
 
-        return;                                 // Line 1
-    }                                           // Line 1
+    /*if ( h->R == h ) {                              // Line 1*/
+        /*solutions_found++;*/
+        /*printf("Solved. Took %lu steps\n", branchs); // Line 1*/
+        /*printf("Found %lu solutions\n", solutions_found);*/
+        /*int w;*/
+        /*_ans *s;*/
+        /*_links *p;*/
+        /*for ( s = ans->next ; s->next != NULL ; s = s->next ){*/
+            /*for (p = s->O, w = 0 ; (p != s->O || w == 0) && p->C->n > n ; p = p->R, w++ );*/
+            /*c = p;*/
+            /*for (w = 0 ; p != c || w == 0 ; p = p->R, w++ ){*/
+                /*printf("%2.d ", p->C->n > n ? p->C->n - n : p->C->n);*/
+            /*}*/
+            /*puts("");*/
+        /*}*/
+
+        /*if ( s->next == NULL ){*/
+            /*for (p = s->O, w = 0 ; (p != s->O || w == 0) && p->C->n > n ; p = p->R, w++ );*/
+            /*c = p;*/
+            /*for (w = 0 ; p != c || w == 0 ; p = p->R, w++ ){*/
+                /*printf("%2.d ", p->C->n > n ? p->C->n - n : p->C->n);*/
+            /*}*/
+            /*puts("");*/
+        /*}*/
+
+        /*puts("--------------------");*/
+
+        /*return;                                 // Line 1*/
+    /*}                                           // Line 1*/
 
     c = h->R; // Chose a colum object           // Line 2
     s = c->size;
 
-#ifdef __USE_HEURISTIC
-    for ( j = h->R ; j != h ; j = j->R ){       // Line 13
-        if (j->size < s){                       // Line 14
-            c = j;                              // Line 14
-            s = j->size;                        // Line 14
-        }                                       // Line 14
-    }                                           // Line 13
-#endif
+/*#ifdef __USE_HEURISTIC*/
+    /*for ( j = h->R ; j != h ; j = j->R ){       // Line 13*/
+        /*if (j->size < s){                       // Line 14*/
+            /*c = j;                              // Line 14*/
+            /*s = j->size;                        // Line 14*/
+        /*}                                       // Line 14*/
+    /*}                                           // Line 13*/
+/*#endif*/
 
     cover(c);                                   // Line 3
 
