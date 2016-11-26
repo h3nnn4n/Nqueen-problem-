@@ -11,8 +11,6 @@ void cover(_links *c){
     c->R->L = c->L;                                          // Line 15
     c->L->R = c->R;                                          // Line 15
 
-    branchs++;
-
     for ( i = c->D ; i != c ; i = i->D ){                    // Line 16
         for ( j = i->R ; j != i ; j = j->R){                 // Line 17
             j->D->U = j->U;                                  // Line 18
@@ -51,16 +49,19 @@ void dancing_links(_links *h, int k, _ans *ans, int n){
     /*printf("%d %d\n", k, n);*/
     if ( k >= n ) {
         /*abort();*/
-        _ans* a;
-        for ( a = ans->next; a != ans && a != NULL; a = a->next ) {
-            printf("%d ", a->O->n);
-        }
-        printf("\n -> %d\n\n", k);
+        /*_ans* a;*/
+        /*for ( a = ans->next; a != ans && a != NULL; a = a->next ) {*/
+            /*printf("%d ", a->O->n);*/
+        /*}*/
+        /*printf("\n -> %d\n\n", k);*/
 
         solutions_found++;
-        printf("Solved. Took %lu steps\n", branchs); // Line 1
-        printf("Found %lu solutions\n", solutions_found);
-        puts("--------------------");
+        if ( solutions_found % 100000 == 0 ) {
+            printf("Solved. Took %lu steps\n", branchs); // Line 1
+            printf("Found %lu solutions\n", solutions_found);
+            puts("");
+        }
+        /*puts("--------------------");*/
     }
 
     /*if ( h->R == h ) {                              // Line 1*/
@@ -121,6 +122,7 @@ void dancing_links(_links *h, int k, _ans *ans, int n){
             cover(j->C);                        // Line 7
         }
 
+        branchs++;
         dancing_links(h, k + 1, ans, n);        // Line 8
 
         r = tt->O;                              // Line 9
@@ -140,6 +142,11 @@ void dancing_links(_links *h, int k, _ans *ans, int n){
 
     aux->next = NULL;
     free(tt);
+
+    if ( k == 0 ) {
+        printf("Solved. Took %lu steps\n", branchs); // Line 1
+        printf("Found %lu solutions\n", solutions_found);
+    }
 
     return;
 }
