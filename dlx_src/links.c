@@ -174,7 +174,6 @@ void build_links_for_dancing(_links *h, int **m, int x, int y){
 
     for ( j = 0 ; j < x ; j++ ){
         for ( i = 0, a = h->R, first = NULL ; i < y ; i++, a = a->R){
-            printf("%d ", m[i][j]);
             if ( m[i][j] == 1){
                 for ( t = a->D; t != a; t = t->D );
 
@@ -202,7 +201,6 @@ void build_links_for_dancing(_links *h, int **m, int x, int y){
                 }
             }
         }
-        printf("\n");
     }
 
     return;
