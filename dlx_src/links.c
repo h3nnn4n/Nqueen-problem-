@@ -42,7 +42,7 @@ void dancing_links(_links *h, int k, _ans *ans, int n){
     _links *c;
     _links *j;
     _links *r;
-    int s;
+    /*int s;*/
 
     /*if ( k >= n ) abort();*/
 
@@ -95,7 +95,7 @@ void dancing_links(_links *h, int k, _ans *ans, int n){
     /*}                                           // Line 1*/
 
     c = h->R; // Chose a colum object           // Line 2
-    s = c->size;
+    /*s = c->size;*/
 
 /*#ifdef __USE_HEURISTIC*/
     /*for ( j = h->R ; j != h ; j = j->R ){       // Line 13*/
