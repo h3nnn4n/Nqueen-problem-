@@ -16,9 +16,9 @@ int main(int argc, char *argv[]) {
     int *diag1 = ( int* ) malloc ( sizeof ( int ) * ( 2*n - 1 ) );
     int *diag2 = ( int* ) malloc ( sizeof ( int ) * ( 2*n - 1 ) );
 
-    printf("%d %d %d\n", n * 3 + 2*(n*2-1), n*n*n, n);
+    printf("%d %d %d\n", n * 2 + 2*(n*2-1), n*n, n);
 
-    for (int piece = 0; piece < n; ++piece) {
+    /*for (int piece = 0; piece < n; ++piece) {*/
         for (int x = 0; x < n; ++x) {
             for (int y = 0; y < n; ++y) {
                 for (int i = 0; i < 2*n-1; ++i) {
@@ -35,18 +35,18 @@ int main(int argc, char *argv[]) {
                 diag1[x-y+(n-1)] = 1;
                 diag2[x+y      ] = 1;
 
-                // Prints the piece set
-                for (int k = 0; k < n; ++k) {
-                    if ( k == piece ) {
-                        printf("1 ");
-                    } else {
-                        printf("0 ");
-                    }
-                }
+                /*// Prints the piece set*/
+                /*for (int k = 0; k < n; ++k) {*/
+                    /*if ( k == piece ) {*/
+                        /*printf("1 ");*/
+                    /*} else {*/
+                        /*printf("0 ");*/
+                    /*}*/
+                /*}*/
 
-#ifdef _space
-                printf("  -   ");
-#endif
+/*#ifdef _space*/
+                /*printf("  -   ");*/
+    /*#endif*/
 
                 // Prints the row set
                 for (int k = 0; k < n; ++k)
@@ -79,7 +79,7 @@ int main(int argc, char *argv[]) {
                 printf("\n");
             }
         }
-    }
+    /*}*/
 
     return 0;
 }
