@@ -1,10 +1,18 @@
 CC=gcc
 CFLAGS=-lm -Wall -Wextra --std=c11
 SOURCES=links.c main.c set_gen.c
-BIN=dlx
+EXECUTABLE=dlx
 
-all:
-	$(CC) $(CFLAGS) $(SOURCES) -o $(BIN)
+OBJECTS=$(SOURCES:.c=.o)
 
+all: $(SOURCES) $(EXECUTABLE)
+
+$(EXECUTABLE): $(OBJECTS)
+	$(CC) $(CFLAGS) $(OBJECTS) -o $@
+
+.c.o:
+	$(CC) $(CFLAGS) $< -c -o $@
+
+.PHONY: clean
 clean:
-	-@rm -rf $(BIN) core 2> /dev/null || true
+	$(RM) $(OBJECTS) $(EXECUTABLE)
