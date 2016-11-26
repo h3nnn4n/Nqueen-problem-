@@ -1,6 +1,6 @@
 CC=gcc
-CFLAGS=-lm -Wall -Wno-unused-but-set-variable -g
-SOURCES=links.c main.c
+CFLAGS=-lm -Wall -Wextra -pg --std=c11 -g
+SOURCES=links.c main.c set_gen.c
 BIN=dlx
 
 all:

@@ -24,7 +24,6 @@ void cover(_links *c){
 
 void uncover(_links *c){
     _links *i, *j;
-
     for ( i = c->U ; i != c ; i = i->U ) {        // Line 20
         for ( j = i->L ; j != i ; j = j->L ){     // Line 21
             j->C->size += 1;                      // Line 22
@@ -32,6 +31,7 @@ void uncover(_links *c){
             j->U->D = j;                          // Line 23
         }
     }
+
     c->R->L = c;                                  // Line 24
     c->L->R = c;                                  // Line 24
 
@@ -174,6 +174,7 @@ void build_links_for_dancing(_links *h, int **m, int x, int y){
 
     for ( j = 0 ; j < x ; j++ ){
         for ( i = 0, a = h->R, first = NULL ; i < y ; i++, a = a->R){
+            printf("%d ", m[i][j]);
             if ( m[i][j] == 1){
                 for ( t = a->D; t != a; t = t->D );
 
@@ -201,6 +202,7 @@ void build_links_for_dancing(_links *h, int **m, int x, int y){
                 }
             }
         }
+        printf("\n");
     }
 
     return;

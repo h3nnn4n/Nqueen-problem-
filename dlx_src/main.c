@@ -21,12 +21,18 @@
 #include <stdlib.h>
 
 #include "links.h"
+#include "set_gen.h"
 
-
-int main(){
+int main(int argc, char *argv[]) {
     _links *m;
     int **set;
-    int x, y, i, j, n;
+    int x, y, i, n;
+
+    if ( argc != 2 ) {
+        n = 8;
+    } else {
+        n = atoi(argv[1]);
+    }
 
     extern unsigned long int branchs;
     extern unsigned long int solutions_found;
@@ -34,23 +40,12 @@ int main(){
     branchs = 0;
     solutions_found = 0;
 
-    fscanf(stdin, "%d", &y);
-    fscanf(stdin, "%d", &x);
-    fscanf(stdin, "%d", &n);
-
-    set = (int**) malloc ( sizeof(int*) * y );
+    set = gen_set(n, &x, &y);
 
     m = init_torus();
 
     for ( i = 0 ; i < y ; i++){
         insert_col_header(m);
-        set[i] = (int*) malloc ( sizeof(int) * x );
-    }
-
-    for ( i = 0 ; i < x ; i++){
-        for ( j = 0 ; j < y ; j++){
-            fscanf(stdin, "%d", &set[j][i]);
-        }
     }
 
     puts("--------------------");
