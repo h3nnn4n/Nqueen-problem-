@@ -62,7 +62,6 @@ void dancing_links(_links *h, int k, _ans *ans, int n){
     _links *c;
     _links *j;
     _links *r;
-    /*int s;*/
 
     /*if ( k >= n ) abort();*/
 
@@ -115,16 +114,18 @@ void dancing_links(_links *h, int k, _ans *ans, int n){
     /*}                                           // Line 1*/
 
     c = h->R; // Chose a colum object           // Line 2
-    /*s = c->size;*/
 
-/*#ifdef __USE_HEURISTIC*/
-    /*for ( j = h->R ; j != h ; j = j->R ){       // Line 13*/
-        /*if (j->size < s){                       // Line 14*/
-            /*c = j;                              // Line 14*/
-            /*s = j->size;                        // Line 14*/
-        /*}                                       // Line 14*/
-    /*}                                           // Line 13*/
-/*#endif*/
+#ifdef __USE_HEURISTIC
+    int s;
+    s = c->size;
+    for ( j = h->R ; j != h ; j = j->R ){       // Line 13
+        if (j->size < s){                       // Line 14
+            printf("%d\t%d\t%p\n", s, j->size, j);
+            c = j;                              // Line 14
+            s = j->size;                        // Line 14
+        }                                       // Line 14
+    }                                           // Line 13
+#endif
 
     cover(c);                                   // Line 3
 
@@ -194,7 +195,11 @@ void build_links_for_dancing(_links *h, int **m, int x, int y){
 
     for ( j = 0 ; j < x ; j++ ){
         for ( i = 0, a = h->R, first = NULL ; i < y ; i++, a = a->R){
+#ifdef __print_set
+            printf("%d ", m[i][j]);
+#endif
             if ( m[i][j] == 1){
+                a->size++;
                 for ( t = a->D; t != a; t = t->D );
 
                 _links *new = (_links*) malloc ( sizeof(_links) );
@@ -221,6 +226,9 @@ void build_links_for_dancing(_links *h, int **m, int x, int y){
                 }
             }
         }
+#ifdef __print_set
+        printf("\n");
+#endif
     }
 
     return;
