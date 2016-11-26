@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-lm -Wall -Wextra -pg --std=c11 -g
+CFLAGS=-lm -Wall -Wextra --std=c11
 SOURCES=links.c main.c set_gen.c
 BIN=dlx
 
