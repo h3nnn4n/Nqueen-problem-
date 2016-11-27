@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-lm -Wall -Wextra --std=c11
+CFLAGS=-lm -Wall -Wextra --std=c11 -Ofast -fomit-frame-pointer -faggressive-loop-optimizations
 SOURCES=links.c main.c set_gen.c
 EXECUTABLE=dlx
 

@@ -60,9 +60,9 @@ void    build_links_for_dancing(_links *h, int **m, int x, int y);
 void    dancing_links(_links *, int, _ans *, int n);
 
 // Covers a column. This process is described on Knuth's paper page 6.
-void    cover(_links *c);
+//void    cover(_links *c);
 
 // Uncovers a column. This process is described on Knuth's paper page 6.
-void    uncover(_links *c);
+//void    uncover(_links *c);
 
 #endif

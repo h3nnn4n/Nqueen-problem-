@@ -26,7 +26,7 @@
 unsigned long int branchs;
 unsigned long int solutions_found;
 
-void cover(_links *c){
+static inline void cover(_links *c){
     _links *i, *j;
     c->R->L = c->L;                                          // Line 15
     c->L->R = c->R;                                          // Line 15
@@ -42,7 +42,7 @@ void cover(_links *c){
     return;
 }
 
-void uncover(_links *c){
+static inline void uncover(_links *c){
     _links *i, *j;
     for ( i = c->U ; i != c ; i = i->U ) {        // Line 20
         for ( j = i->L ; j != i ; j = j->L ){     // Line 21
