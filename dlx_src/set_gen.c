@@ -24,25 +24,54 @@
 int** gen_set(int n, int* xx, int* yy) {
     int **set;
 
-    *yy = n * 2 + 2*(n*2-1);
+    *yy = n * 2 + 2*(n*2-1) - 4;
     *xx = n*n;
 
     set = (int**) malloc ( sizeof(int*) * (*yy) );
 
-    for ( int i = 0 ; i < *yy ; i++)
-        set[i] = (int*) malloc ( sizeof(int) * (*xx) );
+    if ( n % 2 == 0 && 1 ) {
+        *xx -= n/2;
 
-    for (int x = 0; x < n; ++x) {
-        for (int y = 0; y < n; ++y) {
-            if ( n % 2 == 0 )
-            if ( x == 0 && y >= (n/2) ) continue; // Remove half the solutions, should be a 2x speedup
-            for (int k = 0; k < *yy; ++k)
-                set[k][x*n + y] = 0;
+        for ( int i = 0 ; i < *yy ; i++)
+            set[i] = (int*) malloc ( sizeof(int) * (*xx) );
 
-            set[      x                    ][x*n + y] = 1;
-            set[n   + y                    ][x*n + y] = 1;
-            set[2*n + x-y+(n-1)            ][x*n + y] = 1;
-            set[2*n + 2*(n - 1) + x + y +1 ][x*n + y] = 1;
+        int p = 0;
+        for (int x = 0; x < n; ++x) {
+            for (int y = 0; y < n; ++y) {
+                if ( n % 2 == 0 && x == 0 && y >= (n/2) ) continue; // Remove half the solutions, should be a 2x speedup
+                for (int k = 0; k < *yy; ++k)
+                    set[k][p] = 0;
+
+                set[      x                        ][p] = 1;
+                set[n   + y                        ][p] = 1;
+
+                if ( x - y + (n - 1) == 1 || x - y + (n - 1) == 2*n - 1 ) { } else
+                set[2*n + x - y + (n - 1)       - 2][p] = 1;
+
+                if ( x + y == 0 || x + y == 2*n - 2 ) { } else
+                set[2*n + (2*(n - 1)-2) + x + y    ][p] = 1;
+
+                p++;
+            }
+        }
+    } else {
+        for ( int i = 0 ; i < *yy ; i++)
+            set[i] = (int*) malloc ( sizeof(int) * (*xx) );
+
+        for (int x = 0; x < n; ++x) {
+            for (int y = 0; y < n; ++y) {
+                for (int k = 0; k < *yy; ++k)
+                    set[k][x*n + y] = 0;
+
+                set[      x                        ][x*n + y] = 1;
+                set[n   + y                        ][x*n + y] = 1;
+
+                if ( x - y + (n - 1) == 0 || x - y + (n - 1) == 2*n - 2 ) { } else
+                set[2*n + x - y + (n - 1)       - 1][x*n + y] = 1;
+
+                if ( x + y == 0 || x + y == 2*n - 2 ) { } else
+                set[2*n + (2*(n - 1)-2) + x + y    ][x*n + y] = 1;
+            }
         }
     }
     return set;
