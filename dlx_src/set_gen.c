@@ -34,6 +34,8 @@ int** gen_set(int n, int* xx, int* yy) {
 
     for (int x = 0; x < n; ++x) {
         for (int y = 0; y < n; ++y) {
+            if ( n % 2 == 0 )
+            if ( x == 0 && y >= (n/2) ) continue; // Remove half the solutions, should be a 2x speedup
             for (int k = 0; k < *yy; ++k)
                 set[k][x*n + y] = 0;
 

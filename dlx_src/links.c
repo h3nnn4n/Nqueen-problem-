@@ -74,12 +74,16 @@ void dancing_links(_links *h, int k, _ans *ans, int n){
         /*}*/
         /*printf("\n -> %d\n\n", k);*/
 
+        if ( n % 2 == 0 )
         solutions_found++;
+        solutions_found++;
+#ifdef __print_progress
         if ( solutions_found % 100000 == 0 ) {
             printf("Solved. Took %lu steps\n", branchs); // Line 1
             printf("Found %lu solutions\n", solutions_found);
             puts("");
         }
+#endif
         /*puts("--------------------");*/
     }
 
@@ -164,10 +168,16 @@ void dancing_links(_links *h, int k, _ans *ans, int n){
     aux->next = NULL;
     free(tt);
 
+#ifdef __print_result
     if ( k == 0 ) {
         printf("Solved. Took %lu steps\n", branchs); // Line 1
         printf("Found %lu solutions\n", solutions_found);
     }
+#elif defined(__print_result_compact)
+    if ( k == 0 ) {
+        printf("%lu %lu\n", solutions_found, branchs); // Line 1
+    }
+#endif
 
     return;
 }

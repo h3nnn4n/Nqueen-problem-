@@ -49,14 +49,10 @@ int main(int argc, char *argv[]) {
         insert_col_header(m);
     }
 
-    puts("--------------------");
-
     build_links_for_dancing(m, set, x, y);
 
-    puts("--------------------");
     _ans *O = (_ans*) malloc ( sizeof(_ans) );
     dancing_links(m, 0, O, n);
-    puts("--------------------");
 
     return EXIT_SUCCESS;
 }
