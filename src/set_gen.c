@@ -175,3 +175,14 @@ int **get_first_rows(int n, int *xx, int *yy, int n_fixed_rows) {
 
     return data;
 }
+
+void get_size_reduced(int n, int *xx, int *yy, int n_fixed_rows) {
+    *yy = n * 2 + 2*(n*2-1) - 4;
+    *xx = n*n - n_fixed_rows * n + n_fixed_rows;
+}
+
+void get_size_full(int n, int *xx, int *yy) {
+    *yy = n * 2 + 2*(n*2-1) - 4;
+    *xx = n*n;
+}
+

@@ -31,7 +31,7 @@
 //#define __print_progress
 //#define __print_result_more
 //#define __print_result
-#define __print_result_compact
+//#define __print_result_compact
 
 typedef struct __links {
     struct __links *L;
