@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
+#include <assert.h>
 
 #include "links.h"
 #include "set_gen.h"
@@ -30,25 +31,26 @@ int main(int argc, char *argv[]) {
     _ans *O;
     int **set;
     int x, y, n;
-    int n_fixed_rows = atoi(argv[2]);
+    int n_fixed_rows;
 
-    /*if ( argc != 2 ) {*/
-        /*n = 8;*/
-    /*} else {*/
-    n = atoi(argv[1]);
-    /*}*/
+    if ( argc != 3 ) {
+        n = 8;
+        n_fixed_rows = 4;
+    } else {
+        n = atoi(argv[1]);
+        n_fixed_rows = atoi(argv[2]);
+    }
+
+    assert ( n >= n_fixed_rows );
 
     extern unsigned long int branchs;
     extern unsigned long int solutions_found;
 
     branchs = 0;
     solutions_found = 0;
-    O = NULL;
 
     for (int k = 0; k < pow(n, n_fixed_rows); ++k) {
         set = get_first_rows(n, &x, &y, n_fixed_rows);
-
-        /*set = gen_set(n, &x, &y);*/
 
         m = init_torus();
 
@@ -63,6 +65,7 @@ int main(int argc, char *argv[]) {
         O->O = NULL;
         dancing_links(m, 0, O, n);
 
+        // TODO: Clean up the malloc mess
         /*for (int j = 0; j < y; ++j) {*/
             /*free(set[j]);*/
         /*}*/
