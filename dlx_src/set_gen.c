@@ -20,6 +20,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 
 int** gen_set(int n, int* xx, int* yy) {
     int **set;
@@ -75,4 +76,81 @@ int** gen_set(int n, int* xx, int* yy) {
         }
     }
     return set;
+}
+
+int **get_first_rows(int n, int *xx, int *yy, int n_fixed_rows) {
+    static int   first_run = 1;
+    static int  *counter   = NULL;
+    static int **set       = NULL;
+
+    *yy = n * 2 + 2*(n*2-1) - 4;
+    *xx = n*n;
+
+    // TODO: Remove symmetry
+    // This initializes the full set only once
+    if ( first_run ) {
+        first_run = 0;
+
+        counter = (int*) malloc ( sizeof (int*) * n_fixed_rows );
+        for (int i = 0; i < n_fixed_rows; ++i)
+            counter[i] = 0;
+
+        set = (int**) malloc ( sizeof(int*) * (*yy) );
+        for ( int i = 0 ; i < *yy ; i++)
+            set[i] = (int*) malloc ( sizeof(int) * (*xx) );
+
+        for (int x = 0; x < n; ++x) {
+            for (int y = 0; y < n; ++y) {
+                for (int k = 0; k < *yy; ++k)
+                    set[k][x*n + y] = 0;
+
+                set[      x                        ][x*n + y] = 1;
+                set[n   + y                        ][x*n + y] = 1;
+
+                if ( x - y + (n - 1) == 0 || x - y + (n - 1) == 2*n - 2 ) { } else
+                set[2*n + x - y + (n - 1)       - 1][x*n + y] = 1;
+
+                if ( x + y == 0 || x + y == 2*n - 2 ) { } else
+                set[2*n + (2*(n - 1)-2) + x + y    ][x*n + y] = 1;
+            }
+        }
+    }
+
+    *xx = n*n - n_fixed_rows * n + n_fixed_rows; // There will be fewer lines
+
+    // Allocates the memory for the reduced set
+    int **data = (int**) malloc ( sizeof(int*) * (*yy) );
+
+    assert( data != NULL );
+    assert( set  != NULL );
+
+    for ( int i = 0 ; i < *yy ; i++) {
+        data[i] = (int*) malloc ( sizeof(int) * (*xx) );
+        assert( data[i] != NULL );
+    }
+
+    // Copies the fixed rows
+    for (int i = 0; i < n_fixed_rows; ++i) {
+        for (int j = 0; j < *yy; ++j) {
+            data[j][i] = set[j][i * n + counter[i]];
+        }
+    }
+
+    // Copies the rest of the set
+    for ( int i = 0 ; i < *yy; i++) {
+        for (int j = 0; j < *xx - n_fixed_rows; ++j) {
+            data[i][j + n_fixed_rows] = set[i][n_fixed_rows * n + j];
+        }
+    }
+
+    /*// Updates the static counter*/
+    counter[0] += 1;
+    for (int j = 0; j < n_fixed_rows; ++j) {
+        if ( counter[j] >= n ) {
+            counter[j  ] = 0;
+            counter[j+1] += 1;
+        }
+    }
+
+    return data;
 }

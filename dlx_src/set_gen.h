@@ -22,5 +22,6 @@
 #define SET_GEN_H
 
 int** gen_set(int n, int* x, int* y) ;
+int **get_first_rows(int n, int *xx, int *yy, int n_fixed_rows) ;
 
 #endif /* SET_GEN_H */

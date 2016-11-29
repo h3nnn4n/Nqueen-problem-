@@ -41,7 +41,9 @@ int main(int argc, char *argv[]) {
     branchs = 0;
     solutions_found = 0;
 
-    set = gen_set(n, &x, &y);
+    set = get_first_rows(n, &x, &y, 3);
+
+    /*set = gen_set(n, &x, &y);*/
 
     m = init_torus();
 
