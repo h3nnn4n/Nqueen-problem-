@@ -133,7 +133,7 @@ void dancing_links(_links *h, int k, _ans *ans, int n){
 
     _ans *tt = (_ans*) malloc ( sizeof(_ans) ); // Storing the anserws
     _ans *aux = ans;                            //
-    while (aux->next != NULL) aux = aux->next;  //
+    while ( aux && aux->next != NULL ) aux = aux->next;  //
     aux->next = tt;                             //
     tt ->next = NULL;                           //
     tt ->O    = NULL;                           //
@@ -159,7 +159,7 @@ void dancing_links(_links *h, int k, _ans *ans, int n){
     uncover(c);                                 // Line 12
 
     aux = ans;
-    while (aux->next->next != NULL && aux->next != NULL){
+    while (aux->next != NULL && aux->next->next != NULL){
         aux = aux->next;
     }
 
@@ -168,13 +168,13 @@ void dancing_links(_links *h, int k, _ans *ans, int n){
 
 #ifdef __print_result
     if ( k == 0 ) {
-        if ( n % 2 == 0 ) solutions_found *= 2;
+        /*if ( n % 2 == 0 ) solutions_found *= 2;*/
         printf("Solved. Took %lu steps\n", branchs); // Line 1
         printf("Found %lu solutions\n", solutions_found);
     }
 #elif defined(__print_result_compact)
     if ( k == 0 ) {
-        if ( n % 2 == 0 ) solutions_found *= 2;
+        /*if ( n % 2 == 0 ) solutions_found *= 2;*/
         printf("%lu %lu\n", solutions_found, branchs); // Line 1
     }
 #endif

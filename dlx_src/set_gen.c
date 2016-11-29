@@ -138,10 +138,16 @@ int **get_first_rows(int n, int *xx, int *yy, int n_fixed_rows) {
 
     // Copies the rest of the set
     for ( int i = 0 ; i < *yy; i++) {
-        for (int j = 0; j < *xx - n_fixed_rows; ++j) {
-            data[i][j + n_fixed_rows] = set[i][n_fixed_rows * n + j];
+        for (int j = n_fixed_rows; j < *xx; ++j) {
+            data[i][j] = set[i][n_fixed_rows * n + j - n_fixed_rows];
         }
     }
+
+    /*printf("Using counter = ");*/
+
+    /*for (int j = 0; j < n_fixed_rows; ++j)*/
+        /*printf("%d ", counter[j]);*/
+    /*puts("");*/
 
     /*// Updates the static counter*/
     counter[0] += 1;

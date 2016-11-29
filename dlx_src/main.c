@@ -19,6 +19,7 @@
  ******************************************************************************/
 
 #include <stdio.h>
+#include <math.h>
 #include <stdlib.h>
 
 #include "links.h"
@@ -26,35 +27,49 @@
 
 int main(int argc, char *argv[]) {
     _links *m;
+    _ans *O;
     int **set;
-    int x, y, i, n;
+    int x, y, n;
+    int n_fixed_rows = atoi(argv[2]);
 
-    if ( argc != 2 ) {
-        n = 8;
-    } else {
-        n = atoi(argv[1]);
-    }
+    /*if ( argc != 2 ) {*/
+        /*n = 8;*/
+    /*} else {*/
+    n = atoi(argv[1]);
+    /*}*/
 
     extern unsigned long int branchs;
     extern unsigned long int solutions_found;
 
     branchs = 0;
     solutions_found = 0;
+    O = NULL;
 
-    set = get_first_rows(n, &x, &y, 3);
+    for (int k = 0; k < pow(n, n_fixed_rows); ++k) {
+        set = get_first_rows(n, &x, &y, n_fixed_rows);
 
-    /*set = gen_set(n, &x, &y);*/
+        /*set = gen_set(n, &x, &y);*/
 
-    m = init_torus();
+        m = init_torus();
 
-    for ( i = 0 ; i < y ; i++){
-        insert_col_header(m);
+        for ( int i = 0 ; i < y ; i++){
+            insert_col_header(m);
+        }
+
+        build_links_for_dancing(m, set, x, y);
+
+        O = (_ans*) malloc ( sizeof(_ans) );
+        O->next = NULL;
+        O->O = NULL;
+        dancing_links(m, 0, O, n);
+
+        /*for (int j = 0; j < y; ++j) {*/
+            /*free(set[j]);*/
+        /*}*/
+        /*free(set);*/
+        /*free(m  );*/
+        /*free(O  );*/
     }
-
-    build_links_for_dancing(m, set, x, y);
-
-    _ans *O = (_ans*) malloc ( sizeof(_ans) );
-    dancing_links(m, 0, O, n);
 
     return EXIT_SUCCESS;
 }
