@@ -66,8 +66,6 @@ int main(int argc, char *argv[]) {
     branchs = 0;
     solutions_found = 0;
 
-    /*printf("I am %d of %d\n", rank, size);*/
-
     if ( rank == 0 ) {
         int counter = size;
         start_time = MPI_Wtime();
@@ -76,41 +74,49 @@ int main(int argc, char *argv[]) {
         int *outbuf = (int*) malloc ( data_size );
         for (int k = 0; k < pow(n, n_fixed_rows); ++k) {
             int pos = 0;
+            int control = 666;
             do {
-                set = get_first_rows(n, &x, &y, n_fixed_rows);
-                if ( set == NULL )
-                    printf("NULL, try one more\n");
-            } while ( set == NULL );
+                set = get_first_rows(n, &x, &y, n_fixed_rows, &control);
+                if ( set == NULL ) {
+                    if ( control == -1 ) {
+                        printf("Nothing else to do, finishing...\n");
+                        goto skip;
+                    }
+                }
+            } while ( set == NULL && control > -1 );
 
             for (int i = 0; i < x; ++i) {
                 for (int j = 0; j < y; ++j) {
                     outbuf[pos++] = set[j][i];
                 }
             }
+
             if ( --counter > 0 ) {
                 MPI_Send(outbuf, x * y, MPI_INT, counter, 0, MPI_COMM_WORLD );
             } else {
                 unsigned long int tmp = 0;
                 MPI_Recv(&tmp, 1, MPI_UNSIGNED_LONG, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &status);
-                /*printf(" >> MASTER got %lu \t from %d\n", tmp, status.MPI_SOURCE);*/
                 solutions_found += tmp;
 
                 MPI_Send(outbuf, x * y, MPI_INT, status.MPI_SOURCE, 0, MPI_COMM_WORLD );
             }
+
+            fprintf(stderr, " -- %2.2f\r", (k + 1)/pow(n, n_fixed_rows) * 100.0);
+            fflush(stderr);
+            fflush(stdout);
             // TODO: Clean up the malloc mess
         }
+skip:
 
         // KILL
         outbuf[0] = -1;
         outbuf[1] = -1;
         outbuf[2] = -1;
-        /*printf("Sending kill\n");*/
+
         for (int i = 1; i < size; ++i) {
             unsigned long int tmp = 0;
             MPI_Send(outbuf, x * y, MPI_INT, i, 0, MPI_COMM_WORLD );
-            /*printf("KILL sent to %d\n", i);*/
             MPI_Recv(&tmp, 1, MPI_UNSIGNED_LONG, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &status);
-            /*printf(" >> MASTER got %lu \t from %d\n", tmp, status.MPI_SOURCE);*/
             solutions_found += tmp;
         }
 
@@ -136,14 +142,6 @@ int main(int argc, char *argv[]) {
                 }
             }
 
-            /*printf("\n\n%d got:\n", rank);*/
-            /*for (int i = 0; i < x; ++i) {*/
-                /*for (int j = 0; j < y; ++j) {*/
-                    /*printf("%d ", data[j][i]);*/
-                /*}*/
-                /*puts("");*/
-            /*}*/
-
             m = init_torus();
 
             for ( int i = 0 ; i < y ; i++){
@@ -162,9 +160,7 @@ int main(int argc, char *argv[]) {
             free_links(m);
 
             // TODO: Clean up the malloc mess
-            /*printf("%d sending: %lu\n", rank, solutions_found);*/
             MPI_Send(&solutions_found, 1, MPI_UNSIGNED_LONG, 0, 0, MPI_COMM_WORLD );
-            /*printf("  %d SENT\n", rank);*/
             solutions_found = 0;
         }
     }

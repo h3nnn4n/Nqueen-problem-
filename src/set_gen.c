@@ -78,7 +78,7 @@ int** gen_set(int n, int* xx, int* yy) {
     return set;
 }
 
-int **get_first_rows(int n, int *xx, int *yy, int n_fixed_rows) {
+int **get_first_rows(int n, int *xx, int *yy, int n_fixed_rows, int *control) {
     static int   first_run = 1;
     static int  *counter   = NULL;
     static int **set       = NULL;
@@ -98,7 +98,7 @@ int **get_first_rows(int n, int *xx, int *yy, int n_fixed_rows) {
         assert ( n == first_n && "The value of n should not change between runs" );
     }
 
-    int check[n_fixed_rows];
+    int check[n * 2 + 2*(n*2-1) - 4];
 
     *yy = n * 2 + 2*(n*2-1) - 4;
     *xx = n*n;
@@ -146,16 +146,16 @@ int **get_first_rows(int n, int *xx, int *yy, int n_fixed_rows) {
         assert( data[i] != NULL );
     }
 
-    for (int i = 0; i < n_fixed_rows; ++i) {
+    for (int i = 0; i < *yy; ++i) {
         check[i] = 0;
     }
 
     // Copies the fixed rows
     for (int i = 0; i < n_fixed_rows; ++i) {
         for (int j = 0; j < *yy; ++j) {
-            check[j]++;
-            if ( check[j] > 1 ) goto abort;
             data[j][i] = set[j][i * n + counter[i]];
+            check[j] += data[j][i];
+            if ( check[j] > 1 ) { goto abort; }
         }
     }
 
@@ -165,12 +165,6 @@ int **get_first_rows(int n, int *xx, int *yy, int n_fixed_rows) {
             data[i][j] = set[i][n_fixed_rows * n + j - n_fixed_rows];
         }
     }
-
-    /*printf("Using counter = ");*/
-
-    /*for (int j = 0; j < n_fixed_rows; ++j)*/
-        /*printf("%d ", counter[j]);*/
-    /*puts("");*/
 
     /*// Updates the static counter*/
     counter[0] += 1;
@@ -188,11 +182,14 @@ abort:
         free(data[i]);
     free(data);
 
-    /*printf("Using counter = ");*/
-
+    int accul = 0;
     for (int j = 0; j < n_fixed_rows; ++j)
-        printf("%d ", counter[j]);
-    puts("");
+        accul += counter[j] + 1;
+
+    if ( accul == n_fixed_rows * n )
+        *control = -1;
+    else
+        *control = 0;
 
     counter[0] += 1;
     for (int j = 0; j < n_fixed_rows; ++j) {
