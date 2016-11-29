@@ -70,7 +70,12 @@ int main(int argc, char *argv[]) {
         int *outbuf = (int*) malloc ( data_size );
         for (int k = 0; k < pow(n, n_fixed_rows); ++k) {
             int pos = 0;
-            set = get_first_rows(n, &x, &y, n_fixed_rows);
+            do {
+                set = get_first_rows(n, &x, &y, n_fixed_rows);
+                if ( set == NULL )
+                    printf("NULL, try one more\n");
+            } while ( set == NULL );
+
             for (int i = 0; i < x; ++i) {
                 for (int j = 0; j < y; ++j) {
                     outbuf[pos++] = set[j][i];
