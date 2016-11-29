@@ -98,6 +98,8 @@ int **get_first_rows(int n, int *xx, int *yy, int n_fixed_rows) {
         assert ( n == first_n && "The value of n should not change between runs" );
     }
 
+    int check[n_fixed_rows];
+
     *yy = n * 2 + 2*(n*2-1) - 4;
     *xx = n*n;
 
@@ -144,9 +146,15 @@ int **get_first_rows(int n, int *xx, int *yy, int n_fixed_rows) {
         assert( data[i] != NULL );
     }
 
+    for (int i = 0; i < n_fixed_rows; ++i) {
+        check[i] = 0;
+    }
+
     // Copies the fixed rows
     for (int i = 0; i < n_fixed_rows; ++i) {
         for (int j = 0; j < *yy; ++j) {
+            check[j]++;
+            if ( check[j] > 1 ) goto abort;
             data[j][i] = set[j][i * n + counter[i]];
         }
     }
@@ -174,6 +182,27 @@ int **get_first_rows(int n, int *xx, int *yy, int n_fixed_rows) {
     }
 
     return data;
+
+abort:
+    for ( int i = 0 ; i < *yy ; i++)
+        free(data[i]);
+    free(data);
+
+    /*printf("Using counter = ");*/
+
+    for (int j = 0; j < n_fixed_rows; ++j)
+        printf("%d ", counter[j]);
+    puts("");
+
+    counter[0] += 1;
+    for (int j = 0; j < n_fixed_rows; ++j) {
+        if ( counter[j] >= n ) {
+            counter[j  ] = 0;
+            counter[j+1] += 1;
+        }
+    }
+
+    return NULL;
 }
 
 void get_size_reduced(int n, int *xx, int *yy, int n_fixed_rows) {
