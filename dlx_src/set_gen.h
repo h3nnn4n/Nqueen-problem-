@@ -21,7 +21,9 @@
 #ifndef SET_GEN_H
 #define SET_GEN_H
 
-int** gen_set(int n, int* x, int* y) ;
-int **get_first_rows(int n, int *xx, int *yy, int n_fixed_rows) ;
+int **gen_set          (int n, int *x , int *y                   ) ;
+int **get_first_rows   (int n, int *xx, int *yy, int n_fixed_rows) ;
+void  get_size_reduced (int n, int *xx, int *yy, int n_fixed_rows) ;
+void  get_size_full    (int n, int *xx, int *yy                  ) ;
 
 #endif /* SET_GEN_H */

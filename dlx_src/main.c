@@ -23,6 +23,8 @@
 #include <stdlib.h>
 #include <assert.h>
 
+#include <mpi.h>
+
 #include "links.h"
 #include "set_gen.h"
 
@@ -32,6 +34,8 @@ int main(int argc, char *argv[]) {
     int **set;
     int x, y, n;
     int n_fixed_rows;
+    int rank, size;
+    double start_time, end_time;
 
     if ( argc != 3 ) {
         n = 8;
@@ -43,36 +47,114 @@ int main(int argc, char *argv[]) {
 
     assert ( n >= n_fixed_rows );
 
+    MPI_Status status;
+    MPI_Init(&argc, &argv);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    assert ( size <= n );
+
     extern unsigned long int branchs;
     extern unsigned long int solutions_found;
 
     branchs = 0;
     solutions_found = 0;
 
-    for (int k = 0; k < pow(n, n_fixed_rows); ++k) {
-        set = get_first_rows(n, &x, &y, n_fixed_rows);
+    /*printf("I am %d of %d\n", rank, size);*/
 
-        m = init_torus();
+    if ( rank == 0 ) {
+        int counter = size;
+        start_time = MPI_Wtime();
+        get_size_reduced(n, &x, &y, n_fixed_rows);
+        int data_size = x * y * sizeof( int );
+        int *outbuf = (int*) malloc ( data_size );
+        for (int k = 0; k < pow(n, n_fixed_rows); ++k) {
+            int pos = 0;
+            set = get_first_rows(n, &x, &y, n_fixed_rows);
+            for (int i = 0; i < x; ++i) {
+                for (int j = 0; j < y; ++j) {
+                    outbuf[pos++] = set[j][i];
+                }
+            }
+            if ( --counter > 0 ) {
+                MPI_Send(outbuf, x * y, MPI_INT, counter, 0, MPI_COMM_WORLD );
+            } else {
+                unsigned long int tmp = 0;
+                MPI_Recv(&tmp, 1, MPI_UNSIGNED_LONG, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &status);
+                /*printf(" >> MASTER got %lu \t from %d\n", tmp, status.MPI_SOURCE);*/
+                solutions_found += tmp;
 
-        for ( int i = 0 ; i < y ; i++){
-            insert_col_header(m);
+                MPI_Send(outbuf, x * y, MPI_INT, status.MPI_SOURCE, 0, MPI_COMM_WORLD );
+            }
+            // TODO: Clean up the malloc mess
         }
 
-        build_links_for_dancing(m, set, x, y);
+        // KILL
+        outbuf[0] = -1;
+        outbuf[1] = -1;
+        outbuf[2] = -1;
+        /*printf("Sending kill\n");*/
+        for (int i = 1; i < size; ++i) {
+            unsigned long int tmp = 0;
+            MPI_Send(outbuf, x * y, MPI_INT, i, 0, MPI_COMM_WORLD );
+            /*printf("KILL sent to %d\n", i);*/
+            MPI_Recv(&tmp, 1, MPI_UNSIGNED_LONG, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &status);
+            /*printf(" >> MASTER got %lu \t from %d\n", tmp, status.MPI_SOURCE);*/
+            solutions_found += tmp;
+        }
 
-        O = (_ans*) malloc ( sizeof(_ans) );
-        O->next = NULL;
-        O->O = NULL;
-        dancing_links(m, 0, O, n);
+        end_time = MPI_Wtime();
+        printf("%d %f %lu\n", size, end_time - start_time, solutions_found);
+    } else {
+        get_size_reduced(n, &x, &y, n_fixed_rows);
+        int data_size = x * y * sizeof( int );
+        int *inbuf = (int*) malloc ( data_size );
+        int **data = (int**) malloc ( sizeof(int*) * y );
+        for ( int i = 0 ; i < y ; i++)
+            data[i] = (int*) malloc ( sizeof(int) * x );
 
-        // TODO: Clean up the malloc mess
-        /*for (int j = 0; j < y; ++j) {*/
-            /*free(set[j]);*/
-        /*}*/
-        /*free(set);*/
-        /*free(m  );*/
-        /*free(O  );*/
+        while ( 1 ) {
+            MPI_Recv(inbuf, x * y, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &status);
+
+            if ( inbuf[0] == -1 && inbuf[1] == -1 && inbuf[2] == -1 ) break;
+
+            int pos = 0;
+            for (int i = 0; i < x; ++i) {
+                for (int j = 0; j < y; ++j) {
+                    data[j][i] = inbuf[pos++];
+                }
+            }
+
+            /*printf("\n\n%d got:\n", rank);*/
+            /*for (int i = 0; i < x; ++i) {*/
+                /*for (int j = 0; j < y; ++j) {*/
+                    /*printf("%d ", data[j][i]);*/
+                /*}*/
+                /*puts("");*/
+            /*}*/
+
+            m = init_torus();
+
+            for ( int i = 0 ; i < y ; i++){
+                insert_col_header(m);
+            }
+
+            build_links_for_dancing(m, data, x, y);
+
+            O = (_ans*) malloc ( sizeof(_ans) );
+            O->next = NULL;
+            O->O = NULL;
+            dancing_links(m, 0, O, n);
+
+            // TODO: Clean up the malloc mess
+            /*printf("%d sending: %lu\n", rank, solutions_found);*/
+            MPI_Send(&solutions_found, 1, MPI_UNSIGNED_LONG, 0, 0, MPI_COMM_WORLD );
+            /*printf("  %d SENT\n", rank);*/
+            solutions_found = 0;
+        }
     }
+
+    MPI_Finalize();
 
     return EXIT_SUCCESS;
 }
