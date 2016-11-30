@@ -31,7 +31,7 @@
 int main(int argc, char *argv[]) {
     _links *m;
     _ans *O;
-    int **set;
+    /*int **set;*/
     int *counter_control;
     int x, y, n;
     int n_fixed_rows;
@@ -97,13 +97,18 @@ int main(int argc, char *argv[]) {
             /*}*/
 
             if ( --counter > 0 ) {
+                /*printf(" Sending first job to %d\n", counter);*/
                 MPI_Send(counter_control, n_fixed_rows, MPI_INT, counter, 0, MPI_COMM_WORLD );
             } else {
                 unsigned long int tmp = 0;
+                /*printf("  Waiting on Recv\n");*/
                 MPI_Recv(&tmp, 1, MPI_UNSIGNED_LONG, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &status);
                 solutions_found += tmp;
 
-                MPI_Send(counter_control, n_fixed_rows, MPI_INT, counter, 0, MPI_COMM_WORLD );
+                /*printf("   Got ans from %d = %lu\n", status.MPI_SOURCE, tmp);*/
+
+                MPI_Send(counter_control, n_fixed_rows, MPI_INT, status.MPI_SOURCE, 0, MPI_COMM_WORLD );
+                /*printf("Sent more work to %d\n", status.MPI_SOURCE);*/
             }
 
             update_counter( n, n_fixed_rows, counter_control, &control );
@@ -116,9 +121,9 @@ int main(int argc, char *argv[]) {
 /*skip:*/
 
         // KILL
-        outbuf[0] = -1;
-        outbuf[1] = -1;
-        outbuf[2] = -1;
+        for (int i = 0; i < n_fixed_rows; ++i) {
+            counter_control[i] = -1;
+        }
 
         for (int i = 1; i < size; ++i) {
             unsigned long int tmp = 0;
