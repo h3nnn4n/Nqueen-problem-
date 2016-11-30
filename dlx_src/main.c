@@ -69,8 +69,8 @@ int main(int argc, char *argv[]) {
         int counter = size;
         start_time = MPI_Wtime();
         get_size_reduced(n, &x, &y, n_fixed_rows);
-        int data_size = x * y * sizeof( int );
-        int *outbuf = (int*) malloc ( data_size );
+        /*int data_size = x * y * sizeof( int );*/
+        /*int *outbuf = (int*) malloc ( data_size );*/
         for (int k = 0; k < pow(n, n_fixed_rows); ++k) {
             /*int pos = 0;*/
             int control = 666;
