@@ -22,6 +22,8 @@
 #include <stdlib.h>
 #include <assert.h>
 
+#include "set_gen.h"
+
 int** gen_set(int n, int* xx, int* yy) {
     int **set;
 
@@ -78,9 +80,8 @@ int** gen_set(int n, int* xx, int* yy) {
     return set;
 }
 
-int **get_first_rows(int n, int *xx, int *yy, int n_fixed_rows, int *control) {
+int **get_first_rows(int n, int *xx, int *yy, int n_fixed_rows/*, int *control*/, int *counter) {
     static int   first_run = 1;
-    static int  *counter   = NULL;
     static int **set       = NULL;
     int check[n * 2 + 2*(n*2-1) - 4];
 
@@ -92,9 +93,9 @@ int **get_first_rows(int n, int *xx, int *yy, int n_fixed_rows, int *control) {
     if ( first_run ) {
         first_run = 0;
 
-        counter = (int*) malloc ( sizeof (int*) * n_fixed_rows );
-        for (int i = 0; i < n_fixed_rows; ++i)
-            counter[i] = 0;
+        /*counter = (int*) malloc ( sizeof (int*) * n_fixed_rows );*/
+        /*for (int i = 0; i < n_fixed_rows; ++i)*/
+            /*counter[i] = 0;*/
 
         set = (int**) malloc ( sizeof(int*) * (*yy) );
         for ( int i = 0 ; i < *yy ; i++)
@@ -134,12 +135,12 @@ int **get_first_rows(int n, int *xx, int *yy, int n_fixed_rows, int *control) {
         check[i] = 0;
     }
 
-    // Copies the fixed rows
+    // Copies the fixed rows and check for feasibility
     for (int i = 0; i < n_fixed_rows; ++i) {
         for (int j = 0; j < *yy; ++j) {
             data[j][i] = set[j][i * n + counter[i]];
-            check[j] += data[j][i];
-            if ( check[j] > 1 ) { goto abort; }
+            /*check[j] += data[j][i];*/
+            /*if ( check[j] > 1 ) { goto abort; }*/
         }
     }
 
@@ -151,29 +152,33 @@ int **get_first_rows(int n, int *xx, int *yy, int n_fixed_rows, int *control) {
     }
 
     /*// Updates the static counter*/
-    counter[0] += 1;
-    for (int j = 0; j < n_fixed_rows; ++j) {
-        if ( counter[j] >= n ) {
-            counter[j  ] = 0;
-            counter[j+1] += 1;
-        }
-    }
+    /*update_counter( n, n_fixed_rows, counter, control );*/
 
     return data;
 
-abort:
-    for ( int i = 0 ; i < *yy ; i++)
-        free(data[i]);
-    free(data);
+/*abort:*/
+    /*for ( int i = 0 ; i < *yy ; i++)*/
+        /*free(data[i]);*/
+    /*free(data);*/
 
-    int accul = 0;
-    for (int j = 0; j < n_fixed_rows; ++j)
-        accul += counter[j] + 1;
+    /*update_counter( n, n_fixed_rows, counter, control );*/
 
-    if ( accul == n_fixed_rows * n )
-        *control = -1;
-    else
-        *control = 0;
+    /*return NULL;*/
+}
+
+void update_counter( int n, int n_fixed_rows, int *counter, int *control ){
+    assert ( counter != NULL );
+
+    if ( control != NULL ) {
+        int accul = 0;
+        for (int j = 0; j < n_fixed_rows; ++j)
+            accul += counter[j] + 1;
+
+        if ( accul == n_fixed_rows * n )
+            *control = -1;
+        else
+            *control = 0;
+    }
 
     counter[0] += 1;
     for (int j = 0; j < n_fixed_rows; ++j) {
@@ -182,8 +187,6 @@ abort:
             counter[j+1] += 1;
         }
     }
-
-    return NULL;
 }
 
 void get_size_reduced(int n, int *xx, int *yy, int n_fixed_rows) {
