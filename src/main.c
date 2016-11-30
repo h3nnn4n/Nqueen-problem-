@@ -32,6 +32,7 @@ int main(int argc, char *argv[]) {
     _links *m;
     _ans *O;
     int **set;
+    int *counter_control;
     int x, y, n;
     int n_fixed_rows;
     int rank, size;
@@ -66,6 +67,10 @@ int main(int argc, char *argv[]) {
     branchs = 0;
     solutions_found = 0;
 
+    counter_control = (int*) malloc ( sizeof (int*) * n_fixed_rows );
+    for (int i = 0; i < n_fixed_rows; ++i)
+        counter_control[i] = 0;
+
     if ( rank == 0 ) {
         int counter = size;
         start_time = MPI_Wtime();
@@ -73,40 +78,42 @@ int main(int argc, char *argv[]) {
         int data_size = x * y * sizeof( int );
         int *outbuf = (int*) malloc ( data_size );
         for (int k = 0; k < pow(n, n_fixed_rows); ++k) {
-            int pos = 0;
+            /*int pos = 0;*/
             int control = 666;
-            do {
-                set = get_first_rows(n, &x, &y, n_fixed_rows, &control);
-                if ( set == NULL ) {
-                    if ( control == -1 ) {
-                        printf("Nothing else to do, finishing...\n");
-                        goto skip;
-                    }
-                }
-            } while ( set == NULL && control > -1 );
+            /*do {*/
+                /*set = get_first_rows(n, &x, &y, n_fixed_rows, &control, counter_control);*/
+                /*if ( set == NULL ) {*/
+                    /*if ( control == -1 ) {*/
+                        /*printf("Nothing else to do, finishing...\n");*/
+                        /*goto skip;*/
+                    /*}*/
+                /*}*/
+            /*} while ( set == NULL && control > -1 );*/
 
-            for (int i = 0; i < x; ++i) {
-                for (int j = 0; j < y; ++j) {
-                    outbuf[pos++] = set[j][i];
-                }
-            }
+            /*for (int i = 0; i < x; ++i) {*/
+                /*for (int j = 0; j < y; ++j) {*/
+                    /*outbuf[pos++] = set[j][i];*/
+                /*}*/
+            /*}*/
 
             if ( --counter > 0 ) {
-                MPI_Send(outbuf, x * y, MPI_INT, counter, 0, MPI_COMM_WORLD );
+                MPI_Send(counter_control, n_fixed_rows, MPI_INT, counter, 0, MPI_COMM_WORLD );
             } else {
                 unsigned long int tmp = 0;
                 MPI_Recv(&tmp, 1, MPI_UNSIGNED_LONG, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &status);
                 solutions_found += tmp;
 
-                MPI_Send(outbuf, x * y, MPI_INT, status.MPI_SOURCE, 0, MPI_COMM_WORLD );
+                MPI_Send(counter_control, n_fixed_rows, MPI_INT, counter, 0, MPI_COMM_WORLD );
             }
+
+            update_counter( n, n_fixed_rows, counter_control, &control );
 
             fprintf(stderr, " -- %2.2f\r", (k + 1)/pow(n, n_fixed_rows) * 100.0);
             fflush(stderr);
             fflush(stdout);
             // TODO: Clean up the malloc mess
         }
-skip:
+/*skip:*/
 
         // KILL
         outbuf[0] = -1;
@@ -115,7 +122,7 @@ skip:
 
         for (int i = 1; i < size; ++i) {
             unsigned long int tmp = 0;
-            MPI_Send(outbuf, x * y, MPI_INT, i, 0, MPI_COMM_WORLD );
+            MPI_Send(counter_control, n_fixed_rows, MPI_INT, i, 0, MPI_COMM_WORLD );
             MPI_Recv(&tmp, 1, MPI_UNSIGNED_LONG, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &status);
             solutions_found += tmp;
         }
@@ -124,23 +131,29 @@ skip:
         printf("%d %f %lu\n", size, end_time - start_time, solutions_found);
     } else {
         get_size_reduced(n, &x, &y, n_fixed_rows);
-        int data_size = x * y * sizeof( int );
-        int *inbuf = (int*) malloc ( data_size );
-        int **data = (int**) malloc ( sizeof(int*) * y );
-        for ( int i = 0 ; i < y ; i++)
-            data[i] = (int*) malloc ( sizeof(int) * x );
+        /*int data_size = x * y * sizeof( int );*/
+        /*int *inbuf = (int*) malloc ( data_size );*/
+        int **data = NULL; //(int**) malloc ( sizeof(int*) * y );
+        /*for ( int i = 0 ; i < y ; i++)*/
+            /*data[i] = (int*) malloc ( sizeof(int) * x );*/
 
         while ( 1 ) {
-            MPI_Recv(inbuf, x * y, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &status);
+            MPI_Recv(counter_control, n_fixed_rows, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &status);
 
-            if ( inbuf[0] == -1 && inbuf[1] == -1 && inbuf[2] == -1 ) break;
+            // New kill switch
+            int flag = 1;
+            for (int i = 0; i < n_fixed_rows; ++i) {
+                if ( counter_control[i] == -1 ) {
 
-            int pos = 0;
-            for (int i = 0; i < x; ++i) {
-                for (int j = 0; j < y; ++j) {
-                    data[j][i] = inbuf[pos++];
+                } else {
+                    flag = 0;
+                    break;
                 }
             }
+
+            if ( flag ) break;
+
+            data = get_first_rows(n, &x, &y, n_fixed_rows, counter_control);
 
             m = init_torus();
 
