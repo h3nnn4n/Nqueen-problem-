@@ -28,6 +28,8 @@
 #include "links.h"
 #include "set_gen.h"
 
+#define __silent
+
 int main(int argc, char *argv[]) {
     _links *m;
     _ans *O;
@@ -80,7 +82,9 @@ int main(int argc, char *argv[]) {
             do {
                 set = get_first_rows(n, &x, &y, n_fixed_rows, counter_control);
                 if ( set == NULL && control == -1 ) {
+#ifndef __silent
                     printf("Nothing else to do, finishing...\n");
+#endif
                     goto skip;
                 } else if ( control == -1 ) {
                     assert( 0 && "This should be unreachable" );
@@ -101,7 +105,9 @@ int main(int argc, char *argv[]) {
 
             update_counter( n, n_fixed_rows, counter_control, &control );
 
+#ifndef __silent
             fprintf(stderr, " -- %2.2f\r", (k + 1)/pow(n, n_fixed_rows) * 100.0);
+#endif
             fflush(stderr);
             fflush(stdout);
             // TODO: Clean up the malloc mess
@@ -144,7 +150,9 @@ skip:
 
             data = get_first_rows(n, &x, &y, n_fixed_rows, counter_control);
             if ( data == NULL ) {
+#ifndef __silent
                 printf("Got bad counter from master\n");
+#endif
             } else {
                 m = init_torus();
                 assert ( m != NULL && "Null pointer after init_torus" );
