@@ -83,7 +83,7 @@ int** gen_set(int n, int* xx, int* yy) {
 int **get_first_rows(int n, int *xx, int *yy, int n_fixed_rows/*, int *control*/, int *counter) {
     static int   first_run = 1;
     static int **set       = NULL;
-    int check[n * 2 + 2*(n*2-1) - 4];
+    /*int check[n * 2 + 2*(n*2-1) - 4];*/
 
     *yy = n * 2 + 2*(n*2-1) - 4;
     *xx = n*n;
@@ -131,9 +131,9 @@ int **get_first_rows(int n, int *xx, int *yy, int n_fixed_rows/*, int *control*/
         assert( data[i] != NULL );
     }
 
-    for (int i = 0; i < *yy; ++i) {
-        check[i] = 0;
-    }
+    /*for (int i = 0; i < *yy; ++i) {*/
+        /*check[i] = 0;*/
+    /*}*/
 
     // Copies the fixed rows and check for feasibility
     for (int i = 0; i < n_fixed_rows; ++i) {
