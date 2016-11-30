@@ -31,7 +31,6 @@
 int main(int argc, char *argv[]) {
     _links *m;
     _ans *O;
-    /*int **set;*/
     int *counter_control;
     int x, y, n;
     int n_fixed_rows;
@@ -77,18 +76,21 @@ int main(int argc, char *argv[]) {
         get_size_reduced(n, &x, &y, n_fixed_rows);
         /*int data_size = x * y * sizeof( int );*/
         /*int *outbuf = (int*) malloc ( data_size );*/
+        int **set;
         for (int k = 0; k < pow(n, n_fixed_rows); ++k) {
             /*int pos = 0;*/
             int control = 666;
-            /*do {*/
-                /*set = get_first_rows(n, &x, &y, n_fixed_rows, &control, counter_control);*/
-                /*if ( set == NULL ) {*/
-                    /*if ( control == -1 ) {*/
-                        /*printf("Nothing else to do, finishing...\n");*/
-                        /*goto skip;*/
-                    /*}*/
-                /*}*/
-            /*} while ( set == NULL && control > -1 );*/
+            do {
+                set = get_first_rows(n, &x, &y, n_fixed_rows, counter_control);
+                if ( set == NULL && control == -1 ) {
+                    printf("Nothing else to do, finishing...\n");
+                    goto skip;
+                } else if ( control == -1 ) {
+                    assert( 0 && "This should be unreachable" );
+                } else if ( set == NULL ) {
+                    update_counter( n, n_fixed_rows, counter_control, &control );
+                }
+            } while ( set == NULL );
 
             /*for (int i = 0; i < x; ++i) {*/
                 /*for (int j = 0; j < y; ++j) {*/
@@ -118,7 +120,7 @@ int main(int argc, char *argv[]) {
             fflush(stdout);
             // TODO: Clean up the malloc mess
         }
-/*skip:*/
+skip:
 
         // KILL
         for (int i = 0; i < n_fixed_rows; ++i) {
@@ -159,19 +161,26 @@ int main(int argc, char *argv[]) {
             if ( flag ) break;
 
             data = get_first_rows(n, &x, &y, n_fixed_rows, counter_control);
+            if ( data == NULL ) {
+                printf("Got bad counter from master\n");
+                /*for (int i = 0; i < n_fixed_rows; ++i) {*/
+                    /*printf("counter[%2d] = %2d\n", i, counter_control[i]);*/
+                /*}*/
+            } else {
+                m = init_torus();
+                assert ( m != NULL && "Null pointer after init_torus" );
 
-            m = init_torus();
+                for ( int i = 0 ; i < y ; i++){
+                    insert_col_header(m);
+                }
 
-            for ( int i = 0 ; i < y ; i++){
-                insert_col_header(m);
+                build_links_for_dancing(m, data, x, y);
+
+                O = (_ans*) malloc ( sizeof(_ans) );
+                O->next = NULL;
+                O->O = NULL;
+                dancing_links(m, 0, O, n);
             }
-
-            build_links_for_dancing(m, data, x, y);
-
-            O = (_ans*) malloc ( sizeof(_ans) );
-            O->next = NULL;
-            O->O = NULL;
-            dancing_links(m, 0, O, n);
 
             free_set(data, y);
             free_ans(O);

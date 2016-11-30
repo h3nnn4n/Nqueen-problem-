@@ -80,7 +80,7 @@ int** gen_set(int n, int* xx, int* yy) {
     return set;
 }
 
-int **get_first_rows(int n, int *xx, int *yy, int n_fixed_rows/*, int *control*/, int *counter) {
+int **get_first_rows(int n, int *xx, int *yy, int n_fixed_rows,/*int *control,*/ int *counter) {
     static int   first_run = 1;
     static int **set       = NULL;
     static int   first_n   = 0;
@@ -99,7 +99,7 @@ int **get_first_rows(int n, int *xx, int *yy, int n_fixed_rows/*, int *control*/
         assert ( n == first_n && "The value of n should not change between runs" );
     }
 
-    /*int check[n * 2 + 2*(n*2-1) - 4];*/
+    int check[n * 2 + 2*(n*2-1) - 4];
 
     *yy = n * 2 + 2*(n*2-1) - 4;
     *xx = n*n;
@@ -147,16 +147,16 @@ int **get_first_rows(int n, int *xx, int *yy, int n_fixed_rows/*, int *control*/
         assert( data[i] != NULL );
     }
 
-    /*for (int i = 0; i < *yy; ++i) {*/
-        /*check[i] = 0;*/
-    /*}*/
+    for (int i = 0; i < *yy; ++i) {
+        check[i] = 0;
+    }
 
     // Copies the fixed rows and check for feasibility
     for (int i = 0; i < n_fixed_rows; ++i) {
         for (int j = 0; j < *yy; ++j) {
             data[j][i] = set[j][i * n + counter[i]];
-            /*check[j] += data[j][i];*/
-            /*if ( check[j] > 1 ) { goto abort; }*/
+            check[j] += data[j][i];
+            if ( check[j] > 1 ) { goto abort; }
         }
     }
 
@@ -172,14 +172,14 @@ int **get_first_rows(int n, int *xx, int *yy, int n_fixed_rows/*, int *control*/
 
     return data;
 
-/*abort:*/
-    /*for ( int i = 0 ; i < *yy ; i++)*/
-        /*free(data[i]);*/
-    /*free(data);*/
+abort:
+    for ( int i = 0 ; i < *yy ; i++)
+        free(data[i]);
+    free(data);
 
     /*update_counter( n, n_fixed_rows, counter, control );*/
 
-    /*return NULL;*/
+    return NULL;
 }
 
 void update_counter( int n, int n_fixed_rows, int *counter, int *control ){
