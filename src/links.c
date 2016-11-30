@@ -20,6 +20,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 
 #include "links.h"
 
@@ -91,6 +92,8 @@ void dancing_links(_links *h, int k, _ans *ans, int n){
     cover(c);                                   // Line 3
 
     _ans *tt = (_ans*) malloc ( sizeof(_ans) ); // Storing the anserws
+    assert ( tt != NULL && "Malloc returned NULL at dancing_links, when trying to store an answer" );
+
     _ans *aux = ans;                            //
     while ( aux && aux->next != NULL ) aux = aux->next;  //
     aux->next = tt;                             //
@@ -143,6 +146,7 @@ void dancing_links(_links *h, int k, _ans *ans, int n){
 
 _links *init_torus(){
     _links *p = (_links*) malloc ( sizeof(_links) );
+    assert ( p != NULL && "Malloc returned NULL at init_torus" );
 
     p->L    = p;
     p->R    = p;
@@ -172,6 +176,7 @@ void build_links_for_dancing(_links *h, int **m, int x, int y){
                 for ( t = a->D; t != a; t = t->D );
 
                 _links *new = (_links*) malloc ( sizeof(_links) );
+                assert ( a != NULL && "Malloc returned NULL at build_links_for_dancing" );
 
                 _links *tt = t->D;
                 t->D   = new;
@@ -206,6 +211,8 @@ void build_links_for_dancing(_links *h, int **m, int x, int y){
 void insert_col_header(_links *h){
     _links *new = (_links*) malloc ( sizeof(_links) );
     _links *a;
+
+    assert ( new != NULL && "Malloc returned NULL at insert_col_header" );
 
     a         = h->L;
     h->L      = new;
