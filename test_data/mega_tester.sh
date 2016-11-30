@@ -35,7 +35,7 @@ do
         for i in `seq $N_TESTS`
         do
             echo -n "${i} "
-            mpirun -np 9 ./$BIN $size $frow >> $DATA_FOLDER/$size_$frow
+            mpirun -np 9 ./$BIN $size $frow >> $DATA_FOLDER/${size}_${frow}
         done
         echo -e ''
     done
