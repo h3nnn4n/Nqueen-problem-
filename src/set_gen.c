@@ -80,7 +80,7 @@ int** gen_set(int n, int* xx, int* yy) {
     return set;
 }
 
-int **get_first_rows(int n, int *xx, int *yy, int n_fixed_rows,/*int *control,*/ int *counter) {
+int **get_first_rows(int n, int *xx, int *yy, int n_fixed_rows, int *counter) {
     static int   first_run = 1;
     static int **set       = NULL;
     static int   first_n   = 0;
@@ -108,10 +108,6 @@ int **get_first_rows(int n, int *xx, int *yy, int n_fixed_rows,/*int *control,*/
     // This initializes the full set only once
     if ( first_run ) {
         first_run = 0;
-
-        /*counter = (int*) malloc ( sizeof (int*) * n_fixed_rows );*/
-        /*for (int i = 0; i < n_fixed_rows; ++i)*/
-            /*counter[i] = 0;*/
 
         set = (int**) malloc ( sizeof(int*) * (*yy) );
         for ( int i = 0 ; i < *yy ; i++)
@@ -167,17 +163,12 @@ int **get_first_rows(int n, int *xx, int *yy, int n_fixed_rows,/*int *control,*/
         }
     }
 
-    /*// Updates the static counter*/
-    /*update_counter( n, n_fixed_rows, counter, control );*/
-
     return data;
 
 abort:
     for ( int i = 0 ; i < *yy ; i++)
         free(data[i]);
     free(data);
-
-    /*update_counter( n, n_fixed_rows, counter, control );*/
 
     return NULL;
 }
