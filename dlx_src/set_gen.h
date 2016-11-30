@@ -22,7 +22,7 @@
 #define SET_GEN_H
 
 int **gen_set          (int n, int *x , int *y                                                   ) ;
-int **get_first_rows   (int n, int *xx, int *yy, int  n_fixed_rows,/*int *control,*/ int *counter) ;
+int **get_first_rows   (int n, int *xx, int *yy, int  n_fixed_rows,/*int *control,*/int *counter ) ;
 void  get_size_reduced (int n, int *xx, int *yy, int  n_fixed_rows                               ) ;
 void  get_size_full    (int n, int *xx, int *yy                                                  ) ;
 void  update_counter   (int n, int n_fixed_rows, int *counter     , int *control                 ) ;
