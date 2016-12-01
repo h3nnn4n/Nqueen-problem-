@@ -109,6 +109,8 @@ int main(int argc, char *argv[]) {
             fflush(stdout);
             // TODO: Clean up the malloc mess
         }
+
+        free(set);
 skip:
 
         // KILL
@@ -124,7 +126,9 @@ skip:
         }
 
         end_time = MPI_Wtime();
-        printf("%d %f %lu\n", size, end_time - start_time, solutions_found);
+        printf("%8d %8d %6.6f %14lu\n", size, (int)pow(n, n_fixed_rows), end_time - start_time, solutions_found);
+
+        free(counter_control);
     } else {
         get_size_reduced(n, &x, &y, n_fixed_rows);
         int **data = NULL; //(int**) malloc ( sizeof(int*) * y );
@@ -169,7 +173,13 @@ skip:
             // TODO: Clean up the malloc mess
             MPI_Send(&solutions_found, 1, MPI_UNSIGNED_LONG, 0, 0, MPI_COMM_WORLD );
             solutions_found = 0;
+
+            for ( int i = 0 ; i < y ; i++)
+                free(data[i]);
+            free(data);
+            data = NULL;
         }
+        free(counter_control);
     }
 
     MPI_Finalize();
