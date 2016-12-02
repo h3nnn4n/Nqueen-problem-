@@ -39,18 +39,12 @@ int main(int argc, char *argv[]) {
     int rank, size;
     double start_time, end_time;
 
-    if ( argc == 2 ) {
-        n = atoi(argv[1]);
-        n_fixed_rows = 2;
-        printf("Assuming n_fixed_rows = %d\n", n_fixed_rows);
-    } else if ( argc == 3 ) {
+    if ( argc != 3 ) {
+        n = 8;
+        n_fixed_rows = 4;
+    } else {
         n = atoi(argv[1]);
         n_fixed_rows = atoi(argv[2]);
-    } else {
-        n = 8;
-        n_fixed_rows = 2;
-        printf("Assuming n = %d\n", n);
-        printf("Assuming n_fixed_rows = %d\n", n_fixed_rows);
     }
 
     assert ( n >= n_fixed_rows && "The number of fixed lines is bigger than the total lines" );
@@ -79,7 +73,7 @@ int main(int argc, char *argv[]) {
         int counter = size;
         start_time = MPI_Wtime();
         get_size_reduced(n, &x, &y, n_fixed_rows);
-        int **set;
+        int **set = NULL;
         for (int k = 0; k < pow(n, n_fixed_rows); ++k) {
             int control = 666;
             do {
@@ -116,7 +110,8 @@ int main(int argc, char *argv[]) {
             // TODO: Clean up the malloc mess
         }
 
-        free(set);
+        if ( set != NULL )
+            free(set);
 skip:
 
         // KILL
@@ -180,7 +175,6 @@ skip:
                 free_links(m);
             }
 
-            // TODO: Clean up the malloc mess
             MPI_Send(&solutions_found, 1, MPI_UNSIGNED_LONG, 0, 0, MPI_COMM_WORLD );
             solutions_found = 0;
         }
@@ -188,7 +182,6 @@ skip:
     }
 
     get_first_rows(0, NULL, NULL, 0, NULL); // This frees all static data inside the function
-
     MPI_Finalize();
 
     return EXIT_SUCCESS;
