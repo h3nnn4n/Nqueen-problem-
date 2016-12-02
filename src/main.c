@@ -33,12 +33,18 @@ int main(int argc, char *argv[]) {
     int x, y, n;
     int n_fixed_rows;
 
-    if ( argc != 3 ) {
-        n = 8;
-        n_fixed_rows = 4;
-    } else {
+    if ( argc == 2 ) {
+        n = atoi(argv[1]);
+        n_fixed_rows = 2;
+        printf("Assuming n_fixed_rows = %d\n", n_fixed_rows);
+    } else if ( argc == 3 ) {
         n = atoi(argv[1]);
         n_fixed_rows = atoi(argv[2]);
+    } else {
+        n = 8;
+        n_fixed_rows = 2;
+        printf("Assuming n = %d\n", n);
+        printf("Assuming n_fixed_rows = %d\n", n_fixed_rows);
     }
 
     assert ( n >= n_fixed_rows );
