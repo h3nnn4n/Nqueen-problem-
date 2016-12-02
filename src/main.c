@@ -47,14 +47,14 @@ int main(int argc, char *argv[]) {
         n_fixed_rows = atoi(argv[2]);
     }
 
-    assert ( n >= n_fixed_rows );
+    assert ( n >= n_fixed_rows && "The number of fixed lines is bigger than the total lines" );
 
     MPI_Status status;
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    assert ( size <= n );
+    assert ( size <= pow(n, n_fixed_rows) && "Not enough work to do, incread n_fixed_rows (second argument)" );
 
     extern unsigned long int branchs;
     extern unsigned long int solutions_found;
@@ -67,6 +67,9 @@ int main(int argc, char *argv[]) {
         counter_control[i] = 0;
 
     if ( rank == 0 ) {
+#ifndef __silent
+                    printf("Starting\nCores:\t%8d\nJobs:\t%8d\n", size, (int)pow(n, n_fixed_rows));
+#endif
         int counter = size;
         start_time = MPI_Wtime();
         get_size_reduced(n, &x, &y, n_fixed_rows);
@@ -106,6 +109,8 @@ int main(int argc, char *argv[]) {
             fflush(stdout);
             // TODO: Clean up the malloc mess
         }
+
+        free(set);
 skip:
 
         // KILL
@@ -121,7 +126,9 @@ skip:
         }
 
         end_time = MPI_Wtime();
-        printf("%d %f %lu\n", size, end_time - start_time, solutions_found);
+        printf("%8d %8d %6.6f %14lu\n", size, (int)pow(n, n_fixed_rows), end_time - start_time, solutions_found);
+
+        free(counter_control);
     } else {
         get_size_reduced(n, &x, &y, n_fixed_rows);
         int **data = NULL; //(int**) malloc ( sizeof(int*) * y );
@@ -166,7 +173,13 @@ skip:
             // TODO: Clean up the malloc mess
             MPI_Send(&solutions_found, 1, MPI_UNSIGNED_LONG, 0, 0, MPI_COMM_WORLD );
             solutions_found = 0;
+
+            for ( int i = 0 ; i < y ; i++)
+                free(data[i]);
+            free(data);
+            data = NULL;
         }
+        free(counter_control);
     }
 
     MPI_Finalize();
