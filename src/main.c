@@ -71,14 +71,12 @@ int main(int argc, char *argv[]) {
         O->O = NULL;
         dancing_links(m, 0, O, n);
 
-        // TODO: Clean up the malloc mess
-        /*for (int j = 0; j < y; ++j) {*/
-            /*free(set[j]);*/
-        /*}*/
-        /*free(set);*/
-        /*free(m  );*/
-        /*free(O  );*/
+        free_set(set, y);
+        free_ans(O);
+        free_links(m);
     }
+
+    get_first_rows(0, NULL, NULL, 0); // This frees all static data inside the function
 
     return EXIT_SUCCESS;
 }

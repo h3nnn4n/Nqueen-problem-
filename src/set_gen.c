@@ -82,6 +82,21 @@ int **get_first_rows(int n, int *xx, int *yy, int n_fixed_rows) {
     static int   first_run = 1;
     static int  *counter   = NULL;
     static int **set       = NULL;
+    static int   first_n   = 0;
+
+    if ( n == 0 && n_fixed_rows == 0 && xx == NULL && yy == NULL ) {
+        free( counter );
+
+        for ( int i = 0 ; i < first_n * 2 + 2*(first_n*2-1) - 4 ; i++)
+            free(set[i]);
+
+        free(set);
+
+        return NULL;
+    } else if ( first_n== 0 ) {
+        first_n = n;
+        assert ( n == first_n && "The value of n should not change between runs" );
+    }
 
     *yy = n * 2 + 2*(n*2-1) - 4;
     *xx = n*n;

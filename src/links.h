@@ -68,4 +68,9 @@ void    dancing_links(_links *, int, _ans *, int n);
 // Uncovers a column. This process is described on Knuth's paper page 6.
 //void    uncover(_links *c);
 
+// Those are cleanup functions
+void free_set ( int **set, int y ) ;
+void free_ans ( _ans *O ) ;
+void free_links ( _links *h ) ;
+
 #endif
