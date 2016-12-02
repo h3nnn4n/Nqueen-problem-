@@ -174,25 +174,20 @@ skip:
                 O->next = NULL;
                 O->O = NULL;
                 dancing_links(m, 0, O, n);
-            }
 
-            free_set(data, y);
-            free_ans(O);
-            free_links(m);
+                free_set(data, y);
+                free_ans(O);
+                free_links(m);
+            }
 
             // TODO: Clean up the malloc mess
             MPI_Send(&solutions_found, 1, MPI_UNSIGNED_LONG, 0, 0, MPI_COMM_WORLD );
             solutions_found = 0;
-
-            for ( int i = 0 ; i < y ; i++)
-                free(data[i]);
-            free(data);
-            data = NULL;
         }
         free(counter_control);
     }
 
-    get_first_rows(0, NULL, NULL, 0); // This frees all static data inside the function
+    get_first_rows(0, NULL, NULL, 0, NULL); // This frees all static data inside the function
 
     MPI_Finalize();
 

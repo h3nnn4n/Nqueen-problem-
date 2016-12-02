@@ -85,7 +85,7 @@ int **get_first_rows(int n, int *xx, int *yy, int n_fixed_rows, int *counter) {
     static int **set       = NULL;
     static int   first_n   = 0;
 
-    if ( n == 0 && n_fixed_rows == 0 && xx == NULL && yy == NULL ) {
+    if ( n == 0 && n_fixed_rows == 0 && xx == NULL && yy == NULL && counter == NULL ) {
         free( counter );
 
         for ( int i = 0 ; i < first_n * 2 + 2*(first_n*2-1) - 4 ; i++)
